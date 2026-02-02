@@ -8,7 +8,11 @@ Created on Mon Feb  2 08:47:33 2026
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
+def simple_linear_regression(X, y):
+    X = np.c_[np.ones(len(X)), X]  # add bias term
+    beta = np.linalg.inv(X.T @ X) @ X.T @ y
+    return beta
+
 
 # --------------------------------------------------
 # APP CONFIG
@@ -70,35 +74,34 @@ st.write("Predict expected crop yield based on rainfall and temperature.")
 
 # Dummy training data
 
+# Load crop yield data
 train_data = pd.read_csv("crop_yield_data.csv")
 
-X = train_data[["Rainfall", "Temperature", "Soil_Moisture"]]
-y = train_data["Yield"]
+# Prepare feature matrix and target
+X = train_data[["Rainfall", "Temperature", "Soil_Moisture"]].values
+y = train_data["Yield"].values
 
-model = LinearRegression()
-model.fit(X, y)
+# Train simple linear regression using NumPy
+# Add bias column (intercept)
+X_b = np.c_[np.ones(len(X)), X]
+# Compute coefficients: beta = (X^T X)^-1 X^T y
+beta = np.linalg.inv(X_b.T @ X_b) @ X_b.T @ y
 
+# --- User Inputs ---
 col1, col2, col3 = st.columns(3)
 
 with col1:
     rainfall_input = st.slider("Rainfall (mm)", 20, 250, 120)
-
 with col2:
     temp_input = st.slider("Temperature (°C)", 15, 35, 25)
-
 with col3:
     soil_moisture_input = st.slider("Soil Moisture (%)", 20, 80, 50)
 
-predicted_yield = model.predict([[
-    rainfall_input,
-    temp_input,
-    soil_moisture_input
-]])[0]
+# --- Prediction ---
+X_new = np.array([1, rainfall_input, temp_input, soil_moisture_input])
+predicted_yield = X_new @ beta
 
-st.metric(
-    "🌾 Predicted Yield (tons/hectare)",
-    f"{predicted_yield:.2f}"
-)
+st.metric("🌾 Predicted Yield (tons/hectare)", f"{predicted_yield:.2f}")
 
 
 # --------------------------------------------------
