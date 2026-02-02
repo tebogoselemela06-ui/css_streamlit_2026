@@ -42,10 +42,11 @@ st.write("The objective of Harvest Guard is to develop a data-driven smart farmi
 
 with col2:
     st.image(
-        "C:/Users/sits/Downloads/data visualization/streamlit_files/Smart Farming.jpg",
-        caption="Smart farming improves productivity and sustainability",
-        
-    )
+    "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8",
+    caption="Smart farming improves productivity and sustainability",
+    width=250
+    
+)
 
 # --------------------------------------------------
 # WEATHER TRENDS SECTION
