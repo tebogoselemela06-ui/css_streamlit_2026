@@ -9,14 +9,16 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 def simple_linear_regression(X, y):
-    X = np.c_[np.ones(len(X)), X]  # add bias term
-    beta = np.linalg.inv(X.T @ X) @ X.T @ y
+    # Add bias term
+    X_b = np.c_[np.ones(len(X)), X]
+    # Compute coefficients safely using pseudo-inverse
+    beta = np.linalg.pinv(X_b) @ y
     return beta
-
 
 # --------------------------------------------------
 # APP CONFIG
-# --------------------------------------------------
+# --------------------------------------------
+    
 st.set_page_config(page_title="Harvest Guard", layout="wide")
 
 st.title("🌾 Harvest Guard – Smart Farming ")
@@ -74,9 +76,22 @@ st.header("🌽 Crop Yield Prediction ")
 st.write("Predict expected crop yield based on rainfall and temperature.")
 
 # Dummy training data
+st.subheader("📥 Enter Training Data (Manual Input)")
 
-# Load crop yield data
-train_data = pd.read_csv("crop_yield_data.csv")
+# Default sample data (user can edit/add rows)
+train_data = st.data_editor(
+    pd.DataFrame({
+        "Rainfall": [80, 120, 150, 200],
+        "Temperature": [22, 25, 28, 30],
+        "Soil_Moisture": [40, 50, 60, 70],
+        "Yield": [2.1, 2.8, 3.4, 4.0]
+    }),
+    num_rows="dynamic",
+    use_container_width=True
+)
+
+
+
 
 # Prepare feature matrix and target
 X = train_data[["Rainfall", "Temperature", "Soil_Moisture"]].values
